@@ -3,6 +3,7 @@ import {
   format,
   startOfDay,
 } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 
 export function getAvailableTimeSlots(date: Date): string[] {
   const slots: string[] = [];
@@ -11,7 +12,7 @@ export function getAvailableTimeSlots(date: Date): string[] {
 
   for (let i = startHour; i <= endHour; i++) {
     const slot = addHours(startOfDay(date), i);
-    slots.push(format(slot, 'HH:mm'));
+    slots.push(format(slot, 'HH:mm', { locale: enUS }));
   }
 
   return slots;
