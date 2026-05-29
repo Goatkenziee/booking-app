@@ -1,4 +1,8 @@
-import { addHours, format, startOfDay } from 'date-fns';
+import {
+  addHours,
+  format,
+  startOfDay,
+} from 'date-fns';
 
 export function getAvailableTimeSlots(date: Date): string[] {
   const slots: string[] = [];
