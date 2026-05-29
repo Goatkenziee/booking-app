@@ -3,6 +3,7 @@ import {
   format,
   startOfDay,
 } from 'date-fns';
+// Import the correct locale for date-fns
 import { enUS } from 'date-fns/locale';
 
 export function getAvailableTimeSlots(date: Date): string[] {
