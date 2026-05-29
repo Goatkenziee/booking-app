@@ -11,9 +11,7 @@ const nextConfig = {
       // isomorphicSwc: true, // if you need to support older environments
     },
   },
-  compilerOptions: {
-    // This key is invalid and should be removed.
-  },
+  // Remove compilerOptions as it's not a valid key in next.config.mjs
 };
 
 export default nextConfig;
