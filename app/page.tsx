@@ -1,4 +1,4 @@
-import { BookingForm } from "@/components/BookingForm"; // Corrected import path
+import { BookingForm } from "@/components/BookingForm";
 
 export default function Home() {
   return (
