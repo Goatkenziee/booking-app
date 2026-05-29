@@ -1,0 +1,30 @@
+{
+  "goal": "Build me a booking app with time slots, email confirmations, admin dashboard, and database-backed bookings.",
+  "updatedAt": "2026-05-29T02:58:28.810Z",
+  "runCount": 3,
+  "autonomousIteration": 1,
+  "repoUrl": null,
+  "deployUrl": null,
+  "fileCount": 19,
+  "files": [
+    ".env.example",
+    "BRAIN.md",
+    "app/admin/page.tsx",
+    "app/api/book/route.ts",
+    "app/api/bookings/route.ts",
+    "app/globals.css",
+    "app/layout.tsx",
+    "app/page.tsx",
+    "components/BookingForm.tsx",
+    "lib/prisma.ts",
+    "lib/utils.ts",
+    "next.config.mjs",
+    "package.json",
+    "postcss.config.js",
+    "prisma/schema.prisma",
+    "prisma/seed.ts",
+    "tailwind.config.ts",
+    "tsconfig.json"
+  ],
+  "lastRunSummary": "PHASE: BUILD → RUNNING · Addressing verification issues and preparing for redeployment."
+}

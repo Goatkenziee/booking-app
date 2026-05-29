@@ -1,18 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../lib/prisma';
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 import { Resend } from 'resend';
+import { getAvailableTimeSlots } from '@/lib/utils';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function POST(req: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const { name, email, date, timeSlot } = await req.json();
+    const { name, email, date, timeSlot } = await request.json();
 
     if (!name || !email || !date || !timeSlot) {
-      return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const booking = await prisma.booking.create({
+    // Check for existing booking at the same time slot
+    const existingBooking = await prisma.booking.findFirst({
+      where: {
+        date: new Date(date),
+        timeSlot,
+      },
+    });
+
+    if (existingBooking) {
+      return NextResponse.json({ error: 'Time slot already booked' }, { status: 409 });
+    }
+
+    const newBooking = await prisma.booking.create({
       data: {
         name,
         email,
@@ -21,16 +34,53 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Send email confirmation
     await resend.emails.send({
       from: 'onboarding@resend.dev',
       to: email,
       subject: 'Booking Confirmation',
-      html: `<p>Hi ${name},</p><p>Your booking for ${timeSlot} on ${new Date(date).toDateString()} has been confirmed.</p><p>Thank you!</p>`,
+      html: `<p>Hi ${name}, your booking for ${timeSlot} on ${new Date(date).toDateString()} is confirmed!</p>`,
     });
 
-    return NextResponse.json(booking, { status: 201 });
+    return NextResponse.json(newBooking, { status: 201 });
   } catch (error) {
-    console.error('Booking creation failed:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    console.error('Booking error:', error);
+    return NextResponse.json({ error: 'Failed to create booking' }, { status: 500 });
+  }
+}
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const dateParam = searchParams.get('date');
+
+    if (!dateParam) {
+      return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 });
+    }
+
+    const date = new Date(dateParam);
+    const bookings = await prisma.booking.findMany({
+      where: {
+        date: {
+          gte: new Date(date.setHours(0, 0, 0, 0)),
+          lt: new Date(date.setHours(23, 59, 59, 999)),
+        },
+      },
+    });
+
+    const bookedTimeSlots = bookings.map((booking) => booking.timeSlot);
+    const allTimeSlots = getAvailableTimeSlots(date);
+
+    const availableTimeSlots = allTimeSlots.filter(
+      (slot) => !bookedTimeSlots.includes(slot)
+    );
+
+    return NextResponse.json({ availableTimeSlots }, { status: 200 });
+  } catch (error) {
+    console.error('Error fetching available time slots:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch available time slots' },
+      { status: 500 }
+    );
   }
 }
