@@ -5,29 +5,17 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
+    "esModuleInterop": true,
     "module": "esnext",
-    "target": "es2020",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next",
-        "options": {
-          "rootDirs": ["."],
-          "semanticWithTypings": true,
-          "nextNodeFile": true,
-          "modulesBuildsByAccess": true,
-          "isAppRouter": true
-        }
-      }
-    ],
     "paths": {
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
