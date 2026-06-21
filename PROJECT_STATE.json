@@ -1,33 +1,39 @@
 {
-  "goal": "Build me a booking app with time slots, email confirmations, admin dashboard, and database-backed bookings.",
-  "updatedAt": "2026-06-21T15:08:00.000Z",
-  "runCount": 2,
-  "autonomousIteration": 1,
-  "repoUrl": "https://github.com/Goatkenziee/booking-app",
-  "deployUrl": null,
-  "fileCount": 22,
-  "files": [
-    ".env",
-    ".env.example",
-    ".gitignore",
-    "BRAIN.md",
-    "CRITERIA.md",
-    "app/globals.css",
-    "app/layout.tsx",
-    "app/page.tsx",
-    "components/ui/button.tsx",
-    "components/ui/card.tsx",
-    "lib/email.ts",
-    "lib/prisma.ts",
-    "lib/utils.ts",
-    "next-env.d.ts",
-    "next.config.mjs",
-    "package.json",
-    "postcss.config.mjs",
-    "prisma/schema.prisma",
-    "prisma/seed.ts",
-    "tailwind.config.ts",
-    "tsconfig.json"
+  "updatedAt": "2026-06-21T15:13:57.278Z",
+  "framework": "Next.js",
+  "dbModels": [
+    "User",
+    "Service",
+    "TimeSlot",
+    "Booking"
   ],
-  "lastRunSummary": "VERIFICATION FIX PASS 1/2 — All 3 verifier issues resolved. Issue 1 (server env vars): Set NODE_ENV, RESEND_API_KEY, EMAIL_FROM, DATABASE_URL, DIRECT_URL as managed secrets. Issue 2 (Prisma DIRECT_URL): Created .env with Neon credentials so prisma validate passes; schema unchanged (it was correct). Issue 3 (_document build error): Cleared stale .next/ cache; build now succeeds cleanly. Also added .env to .gitignore for security."
+  "apiRoutes": [],
+  "pages": [
+    "app/page.tsx"
+  ],
+  "components": [
+    "app/layout.tsx",
+    "components/ui/button.tsx",
+    "components/ui/card.tsx"
+  ],
+  "dependencies": [
+    "@prisma/client",
+    "@types/node",
+    "@types/react",
+    "@types/react-dom",
+    "autoprefixer",
+    "clsx",
+    "eslint",
+    "eslint-config-next",
+    "lucide-react",
+    "next",
+    "postcss",
+    "prisma",
+    "react",
+    "react-dom",
+    "tailwind-merge",
+    "tailwindcss",
+    "typescript"
+  ],
+  "fileCount": 22
 }
