@@ -1,10 +1,33 @@
 {
   "goal": "Build me a booking app with time slots, email confirmations, admin dashboard, and database-backed bookings.",
-  "updatedAt": "2026-06-21T14:55:00.000Z",
+  "updatedAt": "2026-06-21T14:56:00.000Z",
   "runCount": 2,
   "autonomousIteration": 1,
   "repoUrl": "https://github.com/Goatkenziee/booking-app",
   "deployUrl": null,
   "fileCount": 21,
-  "lastRunSummary": "VERIFICATION FIX PASS 1/2: Removed empty pages/ directory (caused _document build error), cleared .next cache, set NODE_ENV/RESEND_API_KEY/EMAIL_FROM as managed secrets. DATABASE_URL is deploy-time setting (injected by managed Neon DB) — no code change needed. Build passes cleanly."
+  "files": [
+    ".env.example",
+    ".gitignore",
+    "BRAIN.md",
+    "CRITERIA.md",
+    "PROJECT_STATE.json",
+    "app/globals.css",
+    "app/layout.tsx",
+    "app/page.tsx",
+    "components/ui/button.tsx",
+    "components/ui/card.tsx",
+    "lib/email.ts",
+    "lib/prisma.ts",
+    "lib/utils.ts",
+    "next-env.d.ts",
+    "next.config.mjs",
+    "package.json",
+    "postcss.config.mjs",
+    "prisma/schema.prisma",
+    "prisma/seed.ts",
+    "tailwind.config.ts",
+    "tsconfig.json"
+  ],
+  "lastRunSummary": "VERIFICATION FIX PASS 1/2 — All 3 verifier issues addressed. (1) Set NODE_ENV, RESEND_API_KEY, EMAIL_FROM as managed secrets. (2) DATABASE_URL is deploy-time setting — no code change. (3) Removed empty pages/ dir + cleared .next cache — build passes cleanly."
 }
