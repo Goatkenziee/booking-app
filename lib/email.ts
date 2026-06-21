@@ -1,79 +1,118 @@
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = process.env.EMAIL_FROM || "bookings@youme.place";
+import { prisma } from "./prisma";
 
+interface SendEmailParams {
+  to: string;
+  subject: string;
+  html: string;
+}
+
+/**
+ * Send an email using Resend if configured, otherwise log to console.
+ * Falls back gracefully so the app works without email setup.
+ */
+export async function sendEmail({ to, subject, html }: SendEmailParams) {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey || apiKey === "re_placeholder") {
+    console.log(`[EMAIL MOCK] To: ${to} | Subject: ${subject}`);
+    console.log(`[EMAIL MOCK] Body: ${html.slice(0, 200)}...`);
+    return { id: "mock-" + Date.now() };
+  }
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: process.env.EMAIL_FROM || "bookings@yourdomain.com",
+      to,
+      subject,
+      html,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    console.error("[EMAIL ERROR]", err);
+    throw new Error(`Failed to send email: ${err}`);
+  }
+
+  return res.json();
+}
+
+/**
+ * Send a booking confirmation email.
+ */
 export async function sendBookingConfirmation({
-  to,
-  name,
+  customerEmail,
+  customerName,
   serviceName,
   date,
-  startTime,
-  endTime,
-  bookingId,
+  time,
 }: {
-  to: string;
-  name: string;
+  customerEmail: string;
+  customerName: string;
   serviceName: string;
   date: string;
-  startTime: string;
-  endTime: string;
-  bookingId: string;
+  time: string;
 }) {
-  // If no Resend key, log and return gracefully
-  if (!RESEND_API_KEY) {
-    console.log(`[EMAIL] Would send to ${to}: Booking ${bookingId} confirmed for ${serviceName} on ${date} ${startTime}-${endTime}`);
-    return { success: true, mock: true };
-  }
-
   const html = `
-    <!DOCTYPE html>
-    <html>
-    <head><meta charset="utf-8"></head>
-    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0f; color: #f0f0f8; padding: 40px;">
-      <div style="max-width: 480px; margin: 0 auto; background: #12121a; border-radius: 16px; padding: 32px; border: 1px solid #2a2a3a;">
-        <h1 style="font-size: 24px; margin: 0 0 8px; background: linear-gradient(90deg, #8b7cf7, #d47bf6); -webkit-background-clip: text; background-clip: text; color: transparent;">
-          Booking Confirmed ✓
-        </h1>
-        <p style="color: #a0a0b8; margin: 0 0 24px;">Hey ${name}, your booking is all set.</p>
-
-        <div style="background: #1a1a28; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-          <p style="margin: 0 0 12px; color: #c0c0d0;"><strong style="color: #f0f0f8;">Service:</strong> ${serviceName}</p>
-          <p style="margin: 0 0 12px; color: #c0c0d0;"><strong style="color: #f0f0f8;">Date:</strong> ${date}</p>
-          <p style="margin: 0 0 12px; color: #c0c0d0;"><strong style="color: #f0f0f8;">Time:</strong> ${startTime} - ${endTime}</p>
-          <p style="margin: 0; color: #c0c0d0;"><strong style="color: #f0f0f8;">Booking ID:</strong> ${bookingId.slice(0, 8)}</p>
-        </div>
-
-        <p style="color: #707088; font-size: 13px; margin: 0;">
-          Need to reschedule? Reply to this email or visit your dashboard.
-        </p>
-      </div>
-    </body>
-    </html>
+    <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+      <h1 style="color: #6c5ce7;">Booking Confirmed! 🎉</h1>
+      <p>Hi <strong>${customerName}</strong>,</p>
+      <p>Your booking has been confirmed.</p>
+      <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+        <tr><td style="padding: 8px; color: #888;">Service</td><td style="padding: 8px;"><strong>${serviceName}</strong></td></tr>
+        <tr><td style="padding: 8px; color: #888;">Date</td><td style="padding: 8px;"><strong>${date}</strong></td></tr>
+        <tr><td style="padding: 8px; color: #888;">Time</td><td style="padding: 8px;"><strong>${time}</strong></td></tr>
+      </table>
+      <p style="color: #888; font-size: 14px;">Need to reschedule? Contact us.</p>
+    </div>
   `;
 
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: FROM_EMAIL,
-        to,
-        subject: `Booking Confirmed — ${serviceName}`,
-        html,
-      }),
-    });
+  return sendEmail({
+    to: customerEmail,
+    subject: `Booking Confirmed — ${serviceName}`,
+    html,
+  });
+}
 
-    if (!res.ok) {
-      const err = await res.text();
-      console.error("[EMAIL] Resend error:", err);
-      return { success: false, error: err };
-    }
+/**
+ * Send an admin notification for a new booking.
+ */
+export async function sendAdminNotification({
+  customerName,
+  customerEmail,
+  serviceName,
+  date,
+  time,
+}: {
+  customerName: string;
+  customerEmail: string;
+  serviceName: string;
+  date: string;
+  time: string;
+}) {
+  const adminEmail = process.env.EMAIL_FROM || "admin@yourdomain.com";
 
-    return { success: true };
-  } catch (err) {
-    console.error("[EMAIL] Failed to send:", err);
-    return { success: false, error: String(err) };
-  }
+  const html = `
+    <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+      <h1 style="color: #6c5ce7;">New Booking! 📅</h1>
+      <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+        <tr><td style="padding: 8px; color: #888;">Customer</td><td style="padding: 8px;"><strong>${customerName}</strong></td></tr>
+        <tr><td style="padding: 8px; color: #888;">Email</td><td style="padding: 8px;"><strong>${customerEmail}</strong></td></tr>
+        <tr><td style="padding: 8px; color: #888;">Service</td><td style="padding: 8px;"><strong>${serviceName}</strong></td></tr>
+        <tr><td style="padding: 8px; color: #888;">Date</td><td style="padding: 8px;"><strong>${date}</strong></td></tr>
+        <tr><td style="padding: 8px; color: #888;">Time</td><td style="padding: 8px;"><strong>${time}</strong></td></tr>
+      </table>
+    </div>
+  `;
+
+  return sendEmail({
+    to: adminEmail,
+    subject: `New Booking: ${customerName} — ${serviceName}`,
+    html,
+  });
 }
