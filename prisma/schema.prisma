@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -48,20 +47,20 @@ model TimeSlot {
 }
 
 model Booking {
-  id         String    @id @default(cuid())
-  userId     String?
-  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
-  serviceId  String
-  service    Service   @relation(fields: [serviceId], references: [id])
-  timeSlotId String
-  timeSlot   TimeSlot  @relation(fields: [timeSlotId], references: [id])
+  id            String   @id @default(cuid())
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  serviceId     String
+  service       Service  @relation(fields: [serviceId], references: [id])
+  timeSlotId    String
+  timeSlot      TimeSlot @relation(fields: [timeSlotId], references: [id])
   customerName  String
   customerEmail String
   customerPhone String?
-  notes      String?
-  status     String    @default("confirmed") // confirmed, cancelled, completed
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  notes         String?
+  status        String   @default("confirmed") // confirmed, cancelled, completed
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([customerEmail])
   @@index([timeSlotId])
