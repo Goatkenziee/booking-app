@@ -1,24 +1,37 @@
 {
-  "updatedAt": "2026-06-21T14:42:00.000Z",
-  "framework": "Next.js 14.2.5 (App Router)",
-  "dbModels": ["User", "Service", "TimeSlot", "Booking"],
-  "apiRoutes": [],
-  "pages": ["app/page.tsx"],
-  "components": ["app/layout.tsx", "components/ui/button.tsx", "components/ui/card.tsx"],
-  "dependencies": [
-    "@prisma/client", "@types/node", "@types/react", "@types/react-dom",
-    "autoprefixer", "clsx", "lucide-react", "next", "postcss", "prisma",
-    "react", "react-dom", "tailwind-merge", "tailwindcss", "typescript"
+  "updatedAt": "2026-06-21T14:48:16.534Z",
+  "framework": "Next.js",
+  "dbModels": [
+    "User",
+    "Service",
+    "TimeSlot",
+    "Booking"
   ],
-  "fileCount": 21,
-  "managedSecrets": ["NODE_ENV", "DATABASE_URL", "DIRECT_URL"],
-  "managedDatabase": true,
-  "repoUrl": "https://github.com/Goatkenziee/booking-app",
-  "deployUrl": null,
-  "verificationStatus": {
-    "prismaSchema": "valid ✅",
-    "documentConflict": "fixed ✅ (pages/_document.tsx removed)",
-    "envVars": "NODE_ENV, DATABASE_URL, DIRECT_URL set as secrets ✅",
-    "vercelDeploy": "blocked ⏳ (integration needs reconnect)"
-  }
+  "apiRoutes": [],
+  "pages": [
+    "app/page.tsx"
+  ],
+  "components": [
+    "app/layout.tsx",
+    "components/ui/button.tsx",
+    "components/ui/card.tsx"
+  ],
+  "dependencies": [
+    "@prisma/client",
+    "@types/node",
+    "@types/react",
+    "@types/react-dom",
+    "autoprefixer",
+    "clsx",
+    "lucide-react",
+    "next",
+    "postcss",
+    "prisma",
+    "react",
+    "react-dom",
+    "tailwind-merge",
+    "tailwindcss",
+    "typescript"
+  ],
+  "fileCount": 21
 }
