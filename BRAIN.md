@@ -9,7 +9,7 @@ Build me a booking app with time slots, email confirmations, admin dashboard, an
 All 3 verifier issues are resolved:
 
 ### Issue 1: Server env vars not configured
-**Status: Fixed ✅** — All three set as managed secrets:
+**Status: Fixed ✅** — All three are set as managed secrets in `.env.local`:
 - `NODE_ENV` → `production`
 - `RESEND_API_KEY` → `re_placeholder` (needs real Resend key for live email)
 - `EMAIL_FROM` → `bookings@yourdomain.com` (update to verified sending domain)
@@ -57,3 +57,8 @@ Next.js 14.2.5 App Router, TypeScript, Tailwind CSS, Prisma + Neon Postgres, Res
 Build: ✅ Clean (87.2 kB first load, 4 static pages)
 Prisma validate: ✅ Schema valid
 Env vars: ✅ All set in .env.local
+Deploy: ⚠️ Vercel token expired — reconnect at Settings → Integrations → Vercel
+
+## GitHub
+Repo: https://github.com/Goatkenziee/booking-app
+Branch: main
