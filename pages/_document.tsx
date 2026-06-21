@@ -1,13 +1,5 @@
-import { Html, Head, Main, NextScript } from 'next/document';
-
-export default function Document() {
-  return (
-    <Html lang="en">
-      <Head />
-      <body>
-        <Main />
-        <NextScript />
-      </body>
-    </Html>
-  );
-}
+// This file exists to prevent Next.js from crashing during build.
+// The project uses App Router (app/ directory) exclusively.
+// An empty _document.tsx causes 'Cannot find module for page: /_document'.
+// This comment-only file is a no-op that satisfies the module loader.
+export {};
