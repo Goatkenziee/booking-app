@@ -1,18 +1,69 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-model Booking {
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  duration    Int      // minutes
+  price       Float    @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  bookings    Booking[]
+  timeSlots   TimeSlot[]
+}
+
+model TimeSlot {
   id        String   @id @default(cuid())
-  startTime DateTime @db.Timestamp(0)
-  endTime   DateTime @db.Timestamp(0)
-  createdAt DateTime @default(now()) @db.Timestamp(0)
-  updatedAt DateTime @updatedAt @db.Timestamp(0)
-  service   String
-  userEmail String
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  date      DateTime // day of the slot
+  startTime String   // "09:00"
+  endTime   String   // "10:00"
+  available Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  bookings  Booking[]
+
+  @@unique([serviceId, date, startTime])
+  @@index([date])
+  @@index([serviceId, date])
+}
+
+model Booking {
+  id         String    @id @default(cuid())
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  serviceId  String
+  service    Service   @relation(fields: [serviceId], references: [id])
+  timeSlotId String
+  timeSlot   TimeSlot  @relation(fields: [timeSlotId], references: [id])
+  customerName  String
+  customerEmail String
+  customerPhone String?
+  notes      String?
+  status     String    @default("confirmed") // confirmed, cancelled, completed
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([customerEmail])
+  @@index([timeSlotId])
+  @@index([serviceId])
 }
