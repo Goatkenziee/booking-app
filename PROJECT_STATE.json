@@ -1,37 +1,10 @@
 {
-  "updatedAt": "2026-06-21T14:48:16.534Z",
-  "framework": "Next.js",
-  "dbModels": [
-    "User",
-    "Service",
-    "TimeSlot",
-    "Booking"
-  ],
-  "apiRoutes": [],
-  "pages": [
-    "app/page.tsx"
-  ],
-  "components": [
-    "app/layout.tsx",
-    "components/ui/button.tsx",
-    "components/ui/card.tsx"
-  ],
-  "dependencies": [
-    "@prisma/client",
-    "@types/node",
-    "@types/react",
-    "@types/react-dom",
-    "autoprefixer",
-    "clsx",
-    "lucide-react",
-    "next",
-    "postcss",
-    "prisma",
-    "react",
-    "react-dom",
-    "tailwind-merge",
-    "tailwindcss",
-    "typescript"
-  ],
-  "fileCount": 21
+  "goal": "Build me a booking app with time slots, email confirmations, admin dashboard, and database-backed bookings.",
+  "updatedAt": "2026-06-21T14:55:00.000Z",
+  "runCount": 2,
+  "autonomousIteration": 1,
+  "repoUrl": "https://github.com/Goatkenziee/booking-app",
+  "deployUrl": null,
+  "fileCount": 21,
+  "lastRunSummary": "VERIFICATION FIX PASS 1/2: Removed empty pages/ directory (caused _document build error), cleared .next cache, set NODE_ENV/RESEND_API_KEY/EMAIL_FROM as managed secrets. DATABASE_URL is deploy-time setting (injected by managed Neon DB) — no code change needed. Build passes cleanly."
 }
