@@ -5,74 +5,44 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Seeding database...");
 
-  // Create some sample bookings for today and upcoming days
-  const today = new Date();
-  const todayStr = today.toISOString().split("T")[0];
-
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = tomorrow.toISOString().split("T")[0];
-
-  const dayAfter = new Date(today);
-  dayAfter.setDate(dayAfter.getDate() + 2);
-  const dayAfterStr = dayAfter.toISOString().split("T")[0];
-
-  const sampleBookings = [
+  // Create some sample bookings
+  const bookings = [
     {
       name: "Alice Johnson",
       email: "alice@example.com",
       phone: "+1-555-0101",
-      date: todayStr,
+      date: new Date(Date.now() + 86400000).toISOString().split("T")[0], // tomorrow
       timeSlot: "10:00",
       service: "Strategy Session",
-      notes: "Looking forward to discussing our Q3 plans.",
+      notes: "Interested in AI integration for our e-commerce platform.",
       status: "confirmed",
     },
     {
       name: "Bob Smith",
       email: "bob@example.com",
       phone: "+1-555-0102",
-      date: todayStr,
-      timeSlot: "14:00",
+      date: new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0], // day after tomorrow
+      timeSlot: "14:30",
       service: "Technical Review",
-      notes: "Need help with architecture review.",
-      status: "confirmed",
-    },
-    {
-      name: "Carol Davis",
-      email: "carol@example.com",
-      date: tomorrowStr,
-      timeSlot: "11:00",
-      service: "Product Demo",
-      notes: null,
-      status: "confirmed",
-    },
-    {
-      name: "David Wilson",
-      email: "david@example.com",
-      phone: "+1-555-0104",
-      date: dayAfterStr,
-      timeSlot: "09:00",
-      service: "General Consultation",
-      notes: "First meeting.",
-      status: "confirmed",
-    },
-    {
-      name: "Eva Martinez",
-      email: "eva@example.com",
-      date: dayAfterStr,
-      timeSlot: "15:30",
-      service: "Onboarding Call",
-      notes: null,
+      notes: "Need help with our cloud infrastructure.",
       status: "confirmed",
     },
   ];
 
-  for (const booking of sampleBookings) {
-    await prisma.booking.create({ data: booking });
+  for (const booking of bookings) {
+    const existing = await prisma.booking.findFirst({
+      where: { date: booking.date, timeSlot: booking.timeSlot },
+    });
+
+    if (!existing) {
+      await prisma.booking.create({ data: booking });
+      console.log(`Created booking for ${booking.name} on ${booking.date} at ${booking.timeSlot}`);
+    } else {
+      console.log(`Skipped ${booking.name} — slot already booked`);
+    }
   }
 
-  console.log(`Seeded ${sampleBookings.length} bookings.`);
+  console.log("Seeding complete!");
 }
 
 main()

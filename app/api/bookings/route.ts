@@ -1,23 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { canSendEmail, resend } from "@/lib/resend";
-import { formatDate, formatTimeSlot } from "@/lib/time-slots";
+import { resend, canSendEmail } from "@/lib/resend";
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const date = searchParams.get("date");
-  const status = searchParams.get("status");
-
+export async function GET() {
   try {
-    const where: Record<string, unknown> = {};
-    if (date) where.date = date;
-    if (status) where.status = status;
-
     const bookings = await prisma.booking.findMany({
-      where,
       orderBy: { createdAt: "desc" },
     });
-    return NextResponse.json(bookings);
+    return NextResponse.json({ bookings });
   } catch (error) {
     console.error("GET /api/bookings error:", error);
     return NextResponse.json({ error: "Failed to fetch bookings" }, { status: 500 });
@@ -30,10 +20,7 @@ export async function POST(request: Request) {
     const { name, email, phone, date, timeSlot, service, notes } = body;
 
     if (!name || !email || !date || !timeSlot) {
-      return NextResponse.json(
-        { error: "Missing required fields: name, email, date, timeSlot" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing required fields: name, email, date, timeSlot" }, { status: 400 });
     }
 
     // Check if slot is already booked
@@ -42,52 +29,34 @@ export async function POST(request: Request) {
     });
 
     if (existing) {
-      return NextResponse.json(
-        { error: "This time slot is already booked. Please choose another." },
-        { status: 409 }
-      );
+      return NextResponse.json({ error: "This time slot is already booked" }, { status: 409 });
     }
 
     const booking = await prisma.booking.create({
-      data: {
-        name,
-        email,
-        phone: phone || null,
-        date,
-        timeSlot,
-        service: service || "General Consultation",
-        notes: notes || null,
-        status: "confirmed",
-      },
+      data: { name, email, phone, date, timeSlot, service: service || "General Consultation", notes, status: "confirmed" },
     });
 
     // Send confirmation email if Resend is configured
     if (canSendEmail() && resend) {
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-
       try {
         await resend.emails.send({
           from: process.env.EMAIL_FROM || "onboarding@resend.dev",
           to: email,
-          subject: `Booking Confirmed — ${formatDate(date)} at ${formatTimeSlot(timeSlot)}`,
-          html: `
-            <div style="font-family: -apple-system, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px; background: #0a0a0f; color: #f0f0f5; border-radius: 12px;">
-              <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px; background: linear-gradient(90deg, #8b5cf6, #d946ef); -webkit-background-clip: text; background-clip: text; color: transparent;">Booking Confirmed</div>
-              <p style="color: #a1a1aa; margin-bottom: 24px;">Your booking has been confirmed. Here are the details:</p>
-              <table style="width: 100%; border-collapse: collapse;">
-                <tr><td style="padding: 8px 0; color: #a1a1aa;">Name</td><td style="padding: 8px 0; text-align: right; font-weight: 500;">${name}</td></tr>
-                <tr><td style="padding: 8px 0; color: #a1a1aa;">Date</td><td style="padding: 8px 0; text-align: right; font-weight: 500;">${formatDate(date)}</td></tr>
-                <tr><td style="padding: 8px 0; color: #a1a1aa;">Time</td><td style="padding: 8px 0; text-align: right; font-weight: 500;">${formatTimeSlot(timeSlot)}</td></tr>
-                <tr><td style="padding: 8px 0; color: #a1a1aa;">Service</td><td style="padding: 8px 0; text-align: right; font-weight: 500;">${service || "General Consultation"}</td></tr>
-              </table>
-              <hr style="border: none; border-top: 1px solid #27272a; margin: 24px 0;" />
-              <p style="color: #a1a1aa; font-size: 14px;">Need to reschedule? <a href="${appUrl}" style="color: #8b5cf6;">Visit our booking page</a>.</p>
-            </div>
-          `,
+          subject: `Booking Confirmed — ${formatDate(date)} at ${formatTime(timeSlot)}`,
+          html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
+            <h2>Booking Confirmed</h2>
+            <p>Hi ${name},</p>
+            <p>Your booking has been confirmed.</p>
+            <table style="width:100%;border-collapse:collapse;margin:16px 0">
+              <tr><td style="padding:8px;border-bottom:1px solid #eee;color:#666">Date</td><td style="padding:8px;border-bottom:1px solid #eee"><strong>${formatDate(date)}</strong></td></tr>
+              <tr><td style="padding:8px;border-bottom:1px solid #eee;color:#666">Time</td><td style="padding:8px;border-bottom:1px solid #eee"><strong>${formatTime(timeSlot)}</strong></td></tr>
+              <tr><td style="padding:8px;border-bottom:1px solid #eee;color:#666">Service</td><td style="padding:8px;border-bottom:1px solid #eee"><strong>${service || "General Consultation"}</strong></td></tr>
+            </table>
+            <p style="color:#666;font-size:14px">Need to reschedule? Contact us.</p>
+          </div>`,
         });
       } catch (emailErr) {
         console.error("Failed to send confirmation email:", emailErr);
-        // Don't fail the booking if email fails
       }
     }
 
@@ -96,4 +65,17 @@ export async function POST(request: Request) {
     console.error("POST /api/bookings error:", error);
     return NextResponse.json({ error: "Failed to create booking" }, { status: 500 });
   }
+}
+
+function formatDate(dateStr: string) {
+  const d = new Date(dateStr + "T12:00:00");
+  return d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+}
+
+function formatTime(time: string) {
+  const [h, m] = time.split(":");
+  const hour = parseInt(h);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+  return `${hour12}:${m} ${ampm}`;
 }

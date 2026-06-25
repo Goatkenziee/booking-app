@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "App",
-  description: "Built on YouMe",
+  title: "Booking App",
+  description: "Book a session — choose your date and time",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
