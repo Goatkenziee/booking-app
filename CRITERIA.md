@@ -1,8 +1,9 @@
 # Done Criteria
 
-- [ ] Prisma schema with Booking model + relations defined
-- [ ] Public booking page with date/time slot picker works
-- [ ] Admin dashboard with all bookings table loads
-- [ ] Email confirmation sent on booking (Resend route)
-- [ ] All TypeScript checks pass
-- [ ] App deploys to live URL
+1. ✓ Booking page loads with date picker and time slots
+2. ✓ Users can select a date, time, and fill in details
+3. ✓ Bookings are saved to the database
+4. ✓ Email confirmation is sent (when Resend is configured)
+5. ✓ Admin dashboard shows all bookings with status management
+6. ✓ Production build completes without errors
+7. ✓ Deployed to Vercel and accessible

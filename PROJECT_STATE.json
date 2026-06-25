@@ -1,48 +1,41 @@
 {
-  "updatedAt": "2026-06-25T05:39:16.167Z",
-  "framework": "Next.js",
-  "dbModels": [
-    "Booking"
-  ],
-  "apiRoutes": [
+  "goal": "Build me a booking app with time slots, email confirmations, admin dashboard, and database-backed bookings.",
+  "updatedAt": "2026-06-25T05:30:45.327Z",
+  "runCount": 1,
+  "autonomousIteration": 0,
+  "repoUrl": "https://github.com/Goatkenziee/booking-app",
+  "deployUrl": null,
+  "fileCount": 30,
+  "files": [
+    ".env.example",
+    ".gitignore",
+    "BRAIN.md",
+    "CRITERIA.md",
+    "PROJECT_STATE.json",
     "app/api/bookings/[id]/route.ts",
     "app/api/bookings/route.ts",
-    "app/api/slots/route.ts"
-  ],
-  "pages": [
-    "app/page.tsx"
-  ],
-  "components": [
+    "app/api/slots/route.ts",
+    "app/globals.css",
     "app/layout.tsx",
+    "app/page.tsx",
     "components/ui/badge.tsx",
     "components/ui/button.tsx",
     "components/ui/card.tsx",
     "components/ui/input.tsx",
     "components/ui/select.tsx",
-    "components/ui/textarea.tsx"
+    "components/ui/textarea.tsx",
+    "lib/prisma.ts",
+    "lib/resend.ts",
+    "lib/time-slots.ts",
+    "lib/utils.ts",
+    "next-env.d.ts",
+    "next.config.mjs",
+    "package.json",
+    "postcss.config.mjs",
+    "prisma/schema.prisma",
+    "prisma/seed.ts",
+    "tailwind.config.ts",
+    "tsconfig.json"
   ],
-  "dependencies": [
-    "@prisma/client",
-    "@types/better-sqlite3",
-    "@types/node",
-    "@types/react",
-    "@types/react-dom",
-    "autoprefixer",
-    "better-sqlite3",
-    "clsx",
-    "date-fns",
-    "lucide-react",
-    "next",
-    "postcss",
-    "prisma",
-    "react",
-    "react-dom",
-    "resend",
-    "tailwind-merge",
-    "tailwindcss",
-    "tsx",
-    "typescript",
-    "zod"
-  ],
-  "fileCount": 30
+  "lastRunSummary": "Fixed build error by removing pages/ directory, set env secrets, pushed to GitHub"
 }
