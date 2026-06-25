@@ -3,88 +3,76 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create services
-  const consultation = await prisma.service.create({
-    data: {
-      name: "30-Min Consultation",
-      description: "A quick 30-minute consultation to discuss your project needs and goals.",
-      duration: 30,
-      price: 0,
-      active: true,
+  console.log("Seeding database...");
+
+  // Create some sample bookings for today and upcoming days
+  const today = new Date();
+  const todayStr = today.toISOString().split("T")[0];
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split("T")[0];
+
+  const dayAfter = new Date(today);
+  dayAfter.setDate(dayAfter.getDate() + 2);
+  const dayAfterStr = dayAfter.toISOString().split("T")[0];
+
+  const sampleBookings = [
+    {
+      name: "Alice Johnson",
+      email: "alice@example.com",
+      phone: "+1-555-0101",
+      date: todayStr,
+      timeSlot: "10:00",
+      service: "Strategy Session",
+      notes: "Looking forward to discussing our Q3 plans.",
+      status: "confirmed",
     },
-  });
-
-  const deepDive = await prisma.service.create({
-    data: {
-      name: "1-Hour Deep Dive",
-      description: "An in-depth session to dive deep into strategy, planning, and execution.",
-      duration: 60,
-      price: 150,
-      active: true,
+    {
+      name: "Bob Smith",
+      email: "bob@example.com",
+      phone: "+1-555-0102",
+      date: todayStr,
+      timeSlot: "14:00",
+      service: "Technical Review",
+      notes: "Need help with architecture review.",
+      status: "confirmed",
     },
-  });
-
-  const workshop = await prisma.service.create({
-    data: {
-      name: "2-Hour Workshop",
-      description: "Intensive hands-on workshop for teams. Includes materials and follow-up.",
-      duration: 120,
-      price: 350,
-      active: true,
+    {
+      name: "Carol Davis",
+      email: "carol@example.com",
+      date: tomorrowStr,
+      timeSlot: "11:00",
+      service: "Product Demo",
+      notes: null,
+      status: "confirmed",
     },
-  });
+    {
+      name: "David Wilson",
+      email: "david@example.com",
+      phone: "+1-555-0104",
+      date: dayAfterStr,
+      timeSlot: "09:00",
+      service: "General Consultation",
+      notes: "First meeting.",
+      status: "confirmed",
+    },
+    {
+      name: "Eva Martinez",
+      email: "eva@example.com",
+      date: dayAfterStr,
+      timeSlot: "15:30",
+      service: "Onboarding Call",
+      notes: null,
+      status: "confirmed",
+    },
+  ];
 
-  // Generate time slots for the next 14 days
-  const services = [consultation, deepDive, workshop];
-  const now = new Date();
-  const startHour = 9; // 9 AM
-  const endHour = 17;  // 5 PM
-
-  for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
-    const date = new Date(now);
-    date.setDate(date.getDate() + dayOffset);
-    date.setHours(0, 0, 0, 0);
-
-    // Skip weekends
-    const dayOfWeek = date.getDay();
-    if (dayOfWeek === 0 || dayOfWeek === 6) continue;
-
-    for (const service of services) {
-      const slotDuration = service.duration;
-      for (let hour = startHour; hour < endHour; hour += slotDuration / 60) {
-        const startTime = `${String(hour).padStart(2, "0")}:00`;
-        const endH = hour + slotDuration / 60;
-        const endTime = `${String(Math.floor(endH)).padStart(2, "0")}:${endH % 1 === 0.5 ? "30" : "00"}`;
-
-        // Skip if end time exceeds endHour
-        if (hour + slotDuration / 60 > endHour) continue;
-
-        const existing = await prisma.timeSlot.findFirst({
-          where: {
-            serviceId: service.id,
-            date,
-            startTime,
-          },
-        });
-
-        if (!existing) {
-          await prisma.timeSlot.create({
-            data: {
-              serviceId: service.id,
-              date,
-              startTime,
-              endTime,
-              available: true,
-            },
-          });
-        }
-      }
-    }
+  for (const booking of sampleBookings) {
+    await prisma.booking.create({ data: booking });
   }
 
-  console.log("✅ Database seeded successfully!");
-  console.log(`  - ${services.length} services created`);
-  console.log(`  - Time slots generated for 14 days`);
+  console.log(`Seeded ${sampleBookings.length} bookings.`);
 }
 
 main()

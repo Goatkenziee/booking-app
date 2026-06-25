@@ -1,40 +1,50 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Sparkles, Zap, Shield } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      <div className="pointer-events-none absolute left-1/2 top-[-10%] h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-primary/20 blur-[140px]" />
-      <section className="container relative flex flex-col items-center pt-28 text-center">
-        <span className="animate-fade-up inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-sm text-muted-foreground">
-          <Sparkles className="h-4 w-4 text-primary" /> Built on YouMe
-        </span>
-        <h1 className="animate-fade-up mt-6 max-w-3xl text-5xl font-bold tracking-tight sm:text-6xl">
-          Your <span className="gradient-text">beautiful</span> app starts here
-        </h1>
-        <p className="animate-fade-up mt-5 max-w-xl text-lg text-muted-foreground">
-          A clean, production-ready base — type what you want and watch it build.
-        </p>
-        <div className="animate-fade-up mt-8 flex gap-3">
-          <Button>Get started</Button>
-          <Button variant="ghost">Learn more</Button>
+    <div className="flex min-h-screen flex-col">
+      <header className="border-b">
+        <div className="container flex h-16 items-center justify-between">
+          <div className="flex items-center gap-2 font-semibold">
+            <span className="h-2.5 w-2.5 rounded-full bg-primary" />
+            App
+          </div>
+          <nav className="hidden items-center gap-7 text-sm text-muted-foreground sm:flex">
+            <a className="transition hover:text-foreground" href="#">Overview</a>
+            <a className="transition hover:text-foreground" href="#">Docs</a>
+            <a className="transition hover:text-foreground" href="#">Pricing</a>
+          </nav>
+          <Button variant="ghost" className="h-9 px-4">Sign in</Button>
         </div>
-      </section>
+      </header>
 
-      <section className="container relative mt-24 grid gap-5 pb-28 sm:grid-cols-3">
-        {[
-          { icon: Zap, title: "Fast", body: "Modern Next.js + Tailwind, tuned for speed." },
-          { icon: Shield, title: "Solid", body: "A real design system, accessible by default." },
-          { icon: Sparkles, title: "Yours", body: "Edit anything — the agent builds on this base." },
-        ].map((f) => (
-          <Card key={f.title} className="animate-fade-up">
-            <f.icon className="h-6 w-6 text-primary" />
-            <h3 className="mt-4 text-lg font-semibold">{f.title}</h3>
-            <p className="mt-1.5 text-sm text-muted-foreground">{f.body}</p>
-          </Card>
-        ))}
-      </section>
-    </main>
+      <main className="container flex flex-1 flex-col justify-center py-20">
+        <div className="animate-fade-up max-w-2xl">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+            Your app starts here
+          </h1>
+          <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+            A clean Next.js + Tailwind shell with the design system already wired
+            up — theme tokens, typography, Button and Card. Reshape this page into
+            the real product: keep the parts you need and build the rest.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button>
+              Get started <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+            <Button variant="outline">View components</Button>
+          </div>
+        </div>
+
+        <Card className="animate-fade-up mt-12 max-w-2xl border-dashed bg-transparent">
+          <p className="text-sm text-muted-foreground">
+            Your interface goes here — a form, a table, a dashboard, a feed,
+            whatever the product needs. Swap this placeholder for the real thing.
+          </p>
+        </Card>
+      </main>
+    </div>
   );
 }
